@@ -1,3 +1,6 @@
+"""
+    DCC{p, q, VS<:UnivariateVolatilitySpec, T<:AbstractFloat, d} <: MultivariateVolatilitySpec{T, d}
+"""
 struct DCC{p, q, VS<:UnivariateVolatilitySpec, T<:AbstractFloat, d} <: MultivariateVolatilitySpec{T, d}
     R::Matrix{T}
     coefs::Vector{T}
@@ -11,11 +14,24 @@ struct DCC{p, q, VS<:UnivariateVolatilitySpec, T<:AbstractFloat, d} <: Multivari
     end
 end
 
+"""
+    CCC{VS<:UnivariateVolatilitySpec, T<:AbstractFloat, d} <: MultivariateVolatilitySpec{T, d}
+---
+    DCC(Qbar, coefs, univariatespecs; method=:largescale)
+Construct a CCC specification with the given parameters. `coefs` must be passed
+as a length-zero Vector of the same element type as Qbar.
+"""
 const CCC = DCC{0, 0}
 
+"""
+    DCC{p, q}(Qbar, coefs, univariatespecs; method=:largescale)
+Construct a DCC(p, q) specification with the given parameters.
+"""
 DCC{p, q}(R::Matrix{T}, coefs::Vector{T}, univariatespecs::Vector{VS}; method::Symbol=:largescale) where {p, q, T, VS<:UnivariateVolatilitySpec{T}} = DCC{p, q, VS, T, length(univariatespecs)}(R, coefs, univariatespecs, method)
 
 nparams(::Type{DCC{p, q}}) where {p, q} = p+q
+
+nparams(::Type{DCC{p, q, VS, T, d}}) where {p, q, VS, T, d}= p + q + d * nparams(VS)
 
 # strange dispatch behavior. to me these methods look the same, but they aren't.
 
@@ -380,7 +396,7 @@ modname(::Type{DCC{p, q, VS, T, d}})  where {p, q, VS, T, d} = "DCC{$p, $q, $(mo
 function show(io::IO, am::MultivariateARCHModel{T, d, MVS}) where {T, d, p, q, VS, MVS<:DCC{p, q, VS}}
     r = p + q
     cc = coef(am)[1:r]
-    println(io, "\n", "$d-dimensional DCC{$p, $q} - $(modname(VS)) - $(modname(typeof(am.meanspec[1]))) specification, T=", nobs(am), ".\n")
+    println(io, "\n", "$d-dimensional DCC{$p, $q} - $(modname(VS)) - $(modname(typeof(am.meanspec[1]))) specification, T=", size(am.data)[1], ".\n")
     if isfitted(am) && (:se=>true) in io
         se = stderror(am)[1:r]
         z = cc ./ se
@@ -407,7 +423,7 @@ end
 
 """
     correlations(am::MultivariateARCHModel)
-Return the `nobs(am)`` estimated conditional correlation matrices.
+Return the estimated conditional correlation matrices.
 """
 function correlations(am::MultivariateARCHModel{T, d, MVS}) where {T, d, MVS<:DCC}
     resids = residuals(am; decorrelated=false)
@@ -419,7 +435,7 @@ end
 
 """
     covariances(am::MultivariateARCHModel)
-Return the `nobs(am)`` estimated conditional covariance matrices.
+Return the estimated conditional covariance matrices.
 """
 function covariances(am::MultivariateARCHModel{T, d, MVS}) where {T, d, MVS<:DCC}
     n, dims = size(am.data)
