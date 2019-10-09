@@ -1,4 +1,4 @@
-# Type hierarchy: Univariate
+# Univariate
 An instance of [`UnivariateARCHModel`](@ref) contains a vector of data (such as equity returns), and encapsulates information about the [volatility specification](@ref volaspec) (e.g., [GARCH](@ref) or [EGARCH](@ref)), the [mean specification](@ref meanspec) (e.g., whether an intercept is included), and the [error distribution](@ref Distributions).
 ## [Volatility specifications](@id volaspec)
 Volatility specifications describe the evolution of ``\sigma_t``. They are modelled as subtypes of [`UnivariateVolatilitySpec`](@ref). There is one type for each class of (G)ARCH model, parameterized by the number(s) of lags (e.g., ``p``, ``q`` for a GARCH(p, q) model). For each volatility specification, the order of the parameters in the coefficient vector is such that all parameters pertaining to the first type parameter (``p``) appear before those pertaining to the second (``q``).
@@ -120,7 +120,7 @@ Different standardized (mean zero, variance one) distributions for ``z_t`` are a
 julia> StdNormal() # convenience constructor
 StdNormal{Float64}(coefs=Float64[])
 ```
-* [`StdT`](@ref), the standardized [Student's `t` distribution](https://en.wikipedia.org/wiki/Student%27s_t-distribution):
+* [`StdT`](@ref), the standardized [Student's ``t`` distribution](https://en.wikipedia.org/wiki/Student%27s_t-distribution):
 ```jldoctest TYPES
 julia> StdT(3) # convenience constructor
 StdT{Float64}(coefs=[3.0])
@@ -210,9 +210,9 @@ Distribution parameters:
 ─────────────────────────────────────────
 ```
 
-It should, however, rarely be necessary to construct an `UnivariateARCHModel` manually via its constructor; typically, instances of it are created by calling [`fit`](@ref), [`selectmodel`](@ref), or [`simulate`](@ref).
+It should, however, rarely be necessary to construct a `UnivariateARCHModel` manually via its constructor; typically, instances of it are created by calling [`fit`](@ref), [`selectmodel`](@ref), or [`simulate`](@ref).
 
-As discussed earlier, [`UnivariateARCHModel`](@ref) implements the interface of StatisticalModel from [`StatsBase`](http://juliastats.github.io/StatsBase.jl/stable/statmodels.html), so you
+As discussed earlier, [`UnivariateARCHModel`](@ref) implements the interface of `StatisticalModel` from [`StatsBase`](http://juliastats.github.io/StatsBase.jl/stable/statmodels.html), so you
 can call `coef`, `coefnames`, `confint`, `dof`, `informationmatrix`, `isfitted`, `loglikelihood`, `nobs`,  `score`, `stderror`, `vcov`, etc. on its instances:
 
 ```jldoctest TYPES
