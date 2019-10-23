@@ -7,7 +7,7 @@ DocTestFilters = r".*[0-9\.]"
 ```
 # Usage
 ## Preliminaries
-We focus on univariate ARCH models for most of this section. Multivariata models work quite similarly; the few differences are discussed in [Multivariate models](@ref).
+We focus on univariate ARCH models for most of this section. Multivariate models work quite similarly; the few differences are discussed in [Multivariate models](@ref).
 We will be using the data from [Bollerslev and Ghysels (1986)](https://doi.org/10.2307/1392425), available as the constant [`BG96`](@ref). The data consist of daily German mark/British pound exchange rates (1974 observations) and are often used in evaluating
 implementations of (G)ARCH models (see, e.g., [Brooks et.al. (2001)](https://doi.org/10.1016/S0169-2070(00)00070-4). We begin by convincing ourselves that the data exhibit ARCH effects; a quick and dirty way of doing this is to look at the sample autocorrelation function of the squared returns:
 
@@ -236,7 +236,7 @@ The function [`selectmodel`](@ref) can be used for automatic model selection, ba
 a class of model (i.e., a subtype of [`UnivariateVolatilitySpec`](@ref)), it will return a fitted [`UnivariateARCHModel`](@ref), with the lag length
 parameters (i.e., ``p`` and ``q`` in the case of [`GARCH`](@ref)) chosen to minimize the desired criterion. The [BIC](https://en.wikipedia.org/wiki/Bayesian_information_criterion) is used by default.
 
-Eg., the following selects the optimal (minimum AIC) EGARCH(o, p, q) model, where o, p, q < 2,  assuming ``t`` distributed errors.
+As an example, the following selects the optimal (minimum AIC) EGARCH(o, p, q) model, where o, p, q < 2,  assuming ``t`` distributed errors.
 
 ```jldoctest MANUAL
 julia> selectmodel(EGARCH, BG96; criterion=aic, maxlags=2, dist=StdT)
@@ -324,10 +324,8 @@ Volatility parameters:
 ─────────────────────────────────────────
 ```
 In this case, an ARMA(1, 1) specification was selected.
-## Risk measures
-One of the primary uses of ARCH models is for estimating and forecasting risk measures, such as [Value at Risk](https://en.wikipedia.org/wiki/Value_at_risk) and [Expected Shortfall](https://en.wikipedia.org/wiki/Expected_shortfall).
-This section details the relevant functionality provided in this package.
-
+## Value at Risk
+One of the primary uses of ARCH models is for estimating and forecasting [Value at Risk](https://en.wikipedia.org/wiki/Value_at_risk).
 Basic in-sample estimates for the Value at Risk implied by an estimated [`UnivariateARCHModel`](@ref) can be obtained using [`VaRs`](@ref):
 ```@setup PLOT
 using ARCHModels
